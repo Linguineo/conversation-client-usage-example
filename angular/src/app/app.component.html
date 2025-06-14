@@ -1,0 +1,9 @@
+<div class="app-container">
+  <div *ngIf="!accessToken" class="login-container">
+    <button (click)="login()">Login with OAuth</button>
+  </div>
+  <app-linguineo-conversation
+    *ngIf="accessToken"
+    [accessToken]="accessToken"
+  ></app-linguineo-conversation>
+</div>

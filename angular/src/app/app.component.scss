@@ -1,0 +1,33 @@
+body {
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background: #f9f9f9;
+  color: #333;
+  margin: 0;
+}
+
+.login-container {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+button {
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  padding: 0.75em 1.5em;
+  font-size: 1em;
+  border-radius: 0.5em;
+  cursor: pointer;
+  margin-bottom: 2em;
+}
+
+button:hover {
+  background-color: #4338ca;
+}
+
+.linguineo-conversation-container {
+  width: 100vw;
+  height: 100vh;
+}

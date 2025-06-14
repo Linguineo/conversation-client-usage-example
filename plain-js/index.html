@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Linguineo conversation test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script nomodule src="https://uploads.linguineo.com/js/production-1.0.0/conversation-webcomponents-es5.js"></script>
+  <script type="module" src="https://uploads.linguineo.com/js/production-1.0.0/conversation-webcomponents-es2015.js"></script>
+  <style>
+    body {
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background: #f9f9f9;
+      color: #333;
+      margin: 0;
+      padding: 2em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 1em;
+    }
+
+    button#login {
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      padding: 0.75em 1.5em;
+      font-size: 1em;
+      border-radius: 0.5em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-bottom: 2em;
+    }
+
+    button#login:hover {
+      background-color: #4338ca;
+    }
+
+    my-secure-widget {
+      width: 100%;
+      max-width: 600px;
+    }
+  </style>
+
+</head>
+<body>
+  <button id="login">Login with OAuth</button>
+  <div className="linguineo-conversation-container">
+    <linguineo-conversation
+      id="linguineo-conversation"
+      bearer-authorization="true"
+      connection-config='{"basePath":"https://open-api.linguineo.com/api/v1","resourcesBasePath":"https://open-api.linguineo.com/api/v1","linguineoBasePath":"https://open-api.linguineo.com/api","directCallsToLinguineoBackend":true}'
+      additional-corrective-feedback="false"
+      show-translations-in-conversations="false"
+      always-wait-for-bot-to-finish-speaking="false"
+      answer-type="SPEAKING_WITH_INTERMEDIATE_WRITING"
+      application="SCOODLE_PLAY"
+      do-additional-pronunciation-analysis="false"
+      enable-contextualized-grammar-corrections="false"
+      inline-feedback="true"
+      language="fr"
+      scenario-id="503"
+      show-pronunciation-feedback="false"
+      show-simple-corrective-feedback="false"
+      sound-effects-enabled="false"
+      translate-into-language="nl"
+      ui-theme="scoodle"
+      user-photo-url="https://uploads.linguineo.com/applications/SCOODLE_PLAY/user.svg"
+      bot-image-url="https://uploads.linguineo.com/applications/SCOODLE_PLAY/robot.svg"
+    >
+    </linguineo-conversation>
+  </div>
+
+  <script>
+    const clientId = 'moodle';
+    const authorizationUrl = 'https://keycloak.linguineo.com/auth/realms/moodle/protocol/openid-connect/auth';
+    const tokenUrl = 'https://keycloak.linguineo.com/auth/realms/moodle/protocol/openid-connect/token';
+
+    const loginBtn = document.getElementById('login');
+    window.addEventListener('linguineo:end', e => {
+      console.log('Conversation finished', {e});
+    });
+
+
+    let refreshToken = null;
+    let accessToken = null;
+    let refreshTimeout = null;
+
+    const login = () => {
+      const authUrl = authorizationUrl +
+        '?response_type=code' +
+        `&client_id=${clientId}` +
+        '&redirect_uri=' + encodeURIComponent(window.location.href) +
+        '&scope=openid';
+      window.location.href = authUrl;
+    }
+
+    loginBtn.onclick = () => {
+      const authUrl = authorizationUrl +
+        '?response_type=code' +
+        `&client_id=${clientId}` +
+        '&redirect_uri=' + encodeURIComponent(window.location.href) +
+        '&scope=openid';
+      window.location.href = authUrl;
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('code')) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+      const code = params.get('code');
+
+      exchangeAuthCode(code).then(response => {
+        processTokenResponse(response);
+        loginBtn.remove();
+      });
+    }
+
+    function processTokenResponse(tokens) {
+      accessToken = tokens.access_token;
+      refreshToken = tokens.refresh_token;
+      updateLinguineoComponentAccessToken(accessToken);
+      setupTokenRefresh(tokens.expires_in);
+    }
+
+    function updateLinguineoComponentAccessToken(accessToken) {
+      const component = document.getElementById('linguineo-conversation');
+      component.setAttribute('access-token', accessToken);
+    }
+
+    function setupTokenRefresh(expiresIn) {
+      if (refreshTimeout) clearTimeout(refreshTimeout);
+
+      refreshTimeout = setTimeout(async () => {
+        if (!refreshToken) return;
+
+        const response = await refreshAccessToken(refreshToken);
+        processTokenResponse(response);
+      }, (expiresIn - 30) * 1000); // retrieve a new one before expiration
+    }
+
+    async function exchangeAuthCode(code) {
+      const response = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: code,
+          redirect_uri: window.location.href,
+          client_id: clientId,
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to exchange token");
+      }
+
+      return await response.json(); // access_token, refresh_token, etc.
+    }
+
+    async function refreshAccessToken(refreshToken) {
+      const response = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: refreshToken,
+          client_id: clientId
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to refresh token");
+      }
+
+      return await response.json();
+    }
+  </script>
+</body>
+</html>
