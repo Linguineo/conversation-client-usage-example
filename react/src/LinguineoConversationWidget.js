@@ -18,7 +18,7 @@ export default function LinguineoConversationWidget({ accessToken }) {
     <div className="linguineo-conversation-container">
       <linguineo-conversation
         access-token={accessToken}
-        bearer-authorization="true"
+        auth-method="bearer"
         connection-config='{"basePath":"https://open-api.linguineo.com/api/v1","resourcesBasePath":"https://open-api.linguineo.com/api/v1","linguineoBasePath":"https://open-api.linguineo.com/api","directCallsToLinguineoBackend":true}'
         additional-corrective-feedback="false"
         show-translations-in-conversations="false"
