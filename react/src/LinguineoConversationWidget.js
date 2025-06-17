@@ -19,9 +19,8 @@ export default function LinguineoConversationWidget({ accessToken }) {
       <linguineo-conversation
         access-token={accessToken}
         auth-method="bearer"
-        connection-config='{"basePath":"https://open-api.linguineo.com/api/v1","resourcesBasePath":"https://open-api.linguineo.com/api/v1","linguineoBasePath":"https://open-api.linguineo.com/api","directCallsToLinguineoBackend":true}'
         additional-corrective-feedback="false"
-        show-translations-in-conversations="false"
+        show-translations-in-conversation="false"
         always-wait-for-bot-to-finish-speaking="false"
         answer-type="SPEAKING_WITH_INTERMEDIATE_WRITING"
         application="SCOODLE_PLAY"
@@ -33,7 +32,7 @@ export default function LinguineoConversationWidget({ accessToken }) {
         show-pronunciation-feedback="false"
         show-simple-corrective-feedback="false"
         sound-effects-enabled="false"
-        translate-into-language="nl"
+        tutor-language="nl"
         ui-theme="scoodle"
         user-photo-url="https://uploads.linguineo.com/applications/SCOODLE_PLAY/user.svg"
         bot-image-url="https://uploads.linguineo.com/applications/SCOODLE_PLAY/robot.svg"

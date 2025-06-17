@@ -3,8 +3,8 @@
 <head>
   <title>Linguineo conversation test</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script nomodule src="https://uploads.linguineo.com/js/production-1.0.0/conversation-webcomponents-es5.js"></script>
-  <script type="module" src="https://uploads.linguineo.com/js/production-1.0.0/conversation-webcomponents-es2015.js"></script>
+  <script nomodule src="https://cdn.linguineo.com/linguineo-conversation/1.0.0/conversation-webcomponents-es5.js"></script>
+  <script type="module" src="https://cdn.linguineo.com/linguineo-conversation/1.0.0/conversation-webcomponents-es2015.js"></script>
   <style>
     body {
       font-family: "Segoe UI", Roboto, sans-serif;
@@ -51,9 +51,8 @@
     <linguineo-conversation
       id="linguineo-conversation"
       auth-method="bearer"
-      connection-config='{"basePath":"https://open-api.linguineo.com/api/v1","resourcesBasePath":"https://open-api.linguineo.com/api/v1","linguineoBasePath":"https://open-api.linguineo.com/api","directCallsToLinguineoBackend":true}'
       additional-corrective-feedback="false"
-      show-translations-in-conversations="false"
+      show-translations-in-conversation="false"
       always-wait-for-bot-to-finish-speaking="false"
       answer-type="SPEAKING_WITH_INTERMEDIATE_WRITING"
       application="SCOODLE_PLAY"
@@ -65,7 +64,7 @@
       show-pronunciation-feedback="false"
       show-simple-corrective-feedback="false"
       sound-effects-enabled="false"
-      translate-into-language="nl"
+      tutor-language="nl"
       ui-theme="scoodle"
       user-photo-url="https://uploads.linguineo.com/applications/SCOODLE_PLAY/user.svg"
       bot-image-url="https://uploads.linguineo.com/applications/SCOODLE_PLAY/robot.svg"
@@ -77,6 +76,7 @@
     const clientId = 'moodle';
     const authorizationUrl = 'https://keycloak.linguineo.com/auth/realms/moodle/protocol/openid-connect/auth';
     const tokenUrl = 'https://keycloak.linguineo.com/auth/realms/moodle/protocol/openid-connect/token';
+    const redirectUri = window.location.origin + window.location.pathname;
 
     const loginBtn = document.getElementById('login');
     window.addEventListener('linguineo:end', e => {
@@ -92,7 +92,7 @@
       const authUrl = authorizationUrl +
         '?response_type=code' +
         `&client_id=${clientId}` +
-        '&redirect_uri=' + encodeURIComponent(window.location.href) +
+        '&redirect_uri=' + encodeURIComponent(redirectUri) +
         '&scope=openid';
       window.location.href = authUrl;
     }
@@ -101,7 +101,7 @@
       const authUrl = authorizationUrl +
         '?response_type=code' +
         `&client_id=${clientId}` +
-        '&redirect_uri=' + encodeURIComponent(window.location.href) +
+        '&redirect_uri=' + encodeURIComponent(redirectUri) +
         '&scope=openid';
       window.location.href = authUrl;
     };
